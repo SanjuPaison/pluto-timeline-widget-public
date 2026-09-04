@@ -9,7 +9,7 @@
   "use strict";
 
   // ---- REQUIRED: your deployed Cloudflare Worker URL ----
-  var WORKER_URL = "https://pluto-timeline-worker.YOUR-SUBDOMAIN.workers.dev/";
+  var WORKER_URL = "https://pluto-timeline-widget.sanjupaison.workers.dev/";
 
   // ---- JotForm (same form used by the original widget; a "Time zone at
   // birth place" dropdown and a 100-Year Timeline checkbox option have both
