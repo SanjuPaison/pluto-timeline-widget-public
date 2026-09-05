@@ -75,9 +75,6 @@
             <select id="ptw-minute" required></select>
             <select id="ptw-ampm" required></select>
           </div>
-          <!-- Hidden field kept in "HH:MM" (24h) format so timeline-client.js,
-               which reads #ptw-time, doesn't need to change. -->
-          <input type="hidden" id="ptw-time" value="14:30" required>
         </div>
         <div class="ptw-field-full"><label for="ptw-timezone">Time zone at birth place</label>
           <select id="ptw-timezone"></select>
@@ -109,48 +106,6 @@
   </footer>
 </div>
 
-<script>
-(function () {
-  "use strict";
-  var hourSel = document.getElementById("ptw-hour");
-  var minSel = document.getElementById("ptw-minute");
-  var ampmSel = document.getElementById("ptw-ampm");
-  var hiddenTime = document.getElementById("ptw-time");
-
-  for (var h = 1; h <= 12; h++) {
-    var opt = document.createElement("option");
-    opt.value = h; opt.textContent = (h < 10 ? "0" + h : h);
-    hourSel.appendChild(opt);
-  }
-  for (var m = 0; m <= 59; m++) {
-    var opt = document.createElement("option");
-    opt.value = m; opt.textContent = (m < 10 ? "0" + m : m);
-    minSel.appendChild(opt);
-  }
-  ["AM", "PM"].forEach(function (p) {
-    var opt = document.createElement("option");
-    opt.value = p; opt.textContent = p;
-    ampmSel.appendChild(opt);
-  });
-
-  // Default to the same 14:30 the old native input started with.
-  hourSel.value = "2";
-  minSel.value = "30";
-  ampmSel.value = "PM";
-
-  function syncHiddenTime() {
-    var hour24 = parseInt(hourSel.value, 10) % 12;
-    if (ampmSel.value === "PM") hour24 += 12;
-    var hh = hour24 < 10 ? "0" + hour24 : "" + hour24;
-    var mm = minSel.value.length === 1 ? "0" + minSel.value : minSel.value;
-    hiddenTime.value = hh + ":" + mm;
-  }
-  [hourSel, minSel, ampmSel].forEach(function (el) {
-    el.addEventListener("change", syncHiddenTime);
-  });
-  syncHiddenTime();
-})();
-</script>
 <script src="timeline-render.js"></script>
 <script src="timeline-client.js"></script>
 </body>

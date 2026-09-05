@@ -79,6 +79,33 @@
     timezoneSelect.appendChild(opt);
   });
 
+  // Populate the birth-time hour/minute/AM-PM selects (replaces the native
+  // <input type="time">, which could crash in-app-browser WebViews).
+  (function populateTimeSelects() {
+    var hourSel = document.getElementById("ptw-hour");
+    var minuteSel = document.getElementById("ptw-minute");
+    var ampmSel = document.getElementById("ptw-ampm");
+    for (var h = 1; h <= 12; h++) {
+      var opt = document.createElement("option");
+      opt.value = h; opt.textContent = (h < 10 ? "0" + h : h);
+      hourSel.appendChild(opt);
+    }
+    for (var m = 0; m <= 59; m++) {
+      var opt = document.createElement("option");
+      opt.value = m; opt.textContent = (m < 10 ? "0" + m : m);
+      minuteSel.appendChild(opt);
+    }
+    ["AM", "PM"].forEach(function (p) {
+      var opt = document.createElement("option");
+      opt.value = p; opt.textContent = p;
+      ampmSel.appendChild(opt);
+    });
+    // Matches the old default of value="14:30" on the native time input.
+    hourSel.value = "2";
+    minuteSel.value = "30";
+    ampmSel.value = "PM";
+  })();
+
   // ---- Birth place geocoding (same approach as the "What Was Happening?"
   // widget: free-text place name -> OpenStreetMap Nominatim -> lat/lon).
   // This is optional; it only unlocks the Ascendant & Midheaven rows. ----
@@ -248,17 +275,20 @@
     var year = parseInt(document.getElementById("ptw-year").value, 10);
     var month = parseInt(document.getElementById("ptw-month").value, 10);
     var day = parseInt(document.getElementById("ptw-day").value, 10);
-    var timeVal = document.getElementById("ptw-time").value; // "HH:MM"
+    var hourSel = document.getElementById("ptw-hour");
+    var minuteSel = document.getElementById("ptw-minute");
+    var ampmSel = document.getElementById("ptw-ampm");
     var gender = document.getElementById("ptw-gender").value;
     var tzOption = timezoneSelect.options[timezoneSelect.selectedIndex];
     var utcOffsetHours = parseFloat(tzOption.value);
 
-    if (!year || !month || !day || !timeVal) return null;
-    var timeParts = timeVal.split(":");
+    if (!year || !month || !day || !hourSel.value || !minuteSel.value || !ampmSel.value) return null;
+    var hour24 = parseInt(hourSel.value, 10) % 12;
+    if (ampmSel.value === "PM") hour24 += 12;
 
     return {
       birthYear: year, birthMonth: month, birthDay: day,
-      birthHour: parseInt(timeParts[0], 10), birthMinute: parseInt(timeParts[1], 10),
+      birthHour: hour24, birthMinute: parseInt(minuteSel.value, 10),
       utcOffsetHours: utcOffsetHours, gender: gender,
       timezoneLabel: tzOption.dataset.label,
       // Optional — only present if "Locate" successfully resolved a birth place.
